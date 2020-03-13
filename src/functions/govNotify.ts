@@ -17,7 +17,6 @@ import { S3BucketService } from "../services/S3BucketService";
  * @param callback - callback function
  */
 const govNotify: Handler = async (event: SQSEvent, context?: Context, callback?: Callback): Promise<void | ManagedUpload.SendData[]> => {
-  console.log("IN CERT GOV NOTIFY");
   if (!event || !event.Records || !Array.isArray(event.Records) || !event.Records.length) {
     console.error("ERROR: event is not defined.");
     throw new Error(ERRORS.EventIsEmpty);
