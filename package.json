@@ -8,7 +8,7 @@
     "npm": "5.6.0"
   },
   "scripts": {
-    "start": "BRANCH=local BUCKET=local node_modules/serverless/bin/serverless invoke local -f main --path tests/resources/s3-event.json",
+    "start": "BRANCH=local BUCKET=local serverless invoke local -f main --path tests/resources/s3-event.json",
     "start:docker": "docker-compose -f docker-compose.yml up -d",
     "build": "node_modules/typescript/bin/tsc --rootDir ./ --outDir .build --sourceMap false && npm run build:copy",
     "build:dev": "node_modules/typescript/bin/tsc && npm run build:copy",
@@ -21,7 +21,8 @@
     "prepush": "npm test && npm run tslint && npm run security-checks",
     "sonar-scanner": "npm run tslint && npm run coverage && sonar-scanner",
     "coverage": "BRANCH=local BUCKET=local SLS_DEBUG=* jest --testMatch=\"**/*.*Test.ts\" --runInBand --coverage",
-    "audit-dep": "npm audit --json | node_modules/.bin/audit-filter --nsp-config=.nsprc --audit=-",
+    "audit:check": "npm audit --json | node_modules/.bin/audit-filter --nsp-config=.nsprc --audit=-",
+    "audit-dep": "npm audit",
     "package": "mkdir -p ${ZIP_NAME} && cp package.json package-lock.json ${ZIP_NAME}/ && cp -r .build/src/* ${ZIP_NAME}/ && cd ${ZIP_NAME} && npm ci --production && rm package.json package-lock.json && zip -qr ../${ZIP_NAME}.zip ."
   },
   "author": "",
