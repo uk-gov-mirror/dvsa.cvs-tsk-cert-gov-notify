@@ -52,7 +52,7 @@ enum DocumentTypes {
 	TRAILER_INTO_SERVICE = 'TrailerIntoService',
 	TFL_FEED = 'TFL_FEED',
 	VTG_VTP12 = 'VTG_VTP12',
-  ANTS_FEED = 'ANTS_FEED',
+	ANTS_FEED = 'ANTS_FEED',
 }
 
 export {
