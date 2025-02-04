@@ -6,6 +6,7 @@ import { TflFeedEmail } from '../emailers/TflFeedEmail';
 import { VtgVtpEmail } from '../emailers/VtgVtpEmail';
 import { DocumentTypes, IGetObjectCommandOutput } from '../models';
 import { NotificationService } from './NotificationService';
+import { AntsFeedEmail } from "../emailers/AntsFeedEmail";
 
 @Service()
 export class EmailAdapterStrategy {
@@ -15,6 +16,10 @@ export class EmailAdapterStrategy {
 		if (filename.includes('VOSA')) {
 			return new TflFeedEmail(this.notificationService);
 		}
+
+    if (filename.includes('ANTS')) {
+      return new AntsFeedEmail(this.notificationService);
+    }
 
 		if (certificate.Metadata!['cert-type'] === 'VTG12' || certificate.Metadata!['cert-type'] === 'VTP12') {
 			return new VtgVtpEmail(this.notificationService);
