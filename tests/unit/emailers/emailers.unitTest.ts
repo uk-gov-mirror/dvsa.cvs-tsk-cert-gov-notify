@@ -6,6 +6,7 @@ import { TflFeedEmail } from '../../../src/emailers/TflFeedEmail';
 import { VtgVtpEmail } from '../../../src/emailers/VtgVtpEmail';
 import { IGetObjectCommandOutput } from '../../../src/models';
 import { NotificationService } from '../../../src/services/NotificationService';
+import { AntsFeedEmail } from '../../../src/emailers/AntsFeedEmail';
 
 describe('Emailers', () => {
   const notificationService: NotificationService = new NotificationService();
@@ -13,6 +14,7 @@ describe('Emailers', () => {
   process.env.TRAILER_INTO_SERVICE_TEMPLATE_ID = '12345';
   process.env.PLATE_TEMPLATE_ID = '12345';
   process.env.TFL_FEED_TEMPLATE_ID = '12345';
+  process.env.ANTS_FEED_TEMPLATE_ID = '12345';
   process.env.VTG_VTP12_TEMPLATE_ID = '12345';
 
   beforeEach(() => {
@@ -145,7 +147,7 @@ describe('Emailers', () => {
       const documentRecord = new TflFeedEmail(notificationService);
       const spy = jest.spyOn(notificationService, 'sendNotification').mockResolvedValue();
 
-      await documentRecord.sendEmail(certificate);
+      await documentRecord.sendEmail(certificate, 'tfl-file-name');
 
       expect(spy).toHaveBeenCalledWith(
         {
@@ -156,7 +158,7 @@ describe('Emailers', () => {
           personalisation: {},
         },
         '12345',
-        null,
+        'tfl-file-name',
       );
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -169,7 +171,7 @@ describe('Emailers', () => {
       const documentRecord = new TflFeedEmail(notificationService);
       const spy = jest.spyOn(notificationService, 'sendNotification').mockResolvedValue();
 
-      await documentRecord.sendEmail(certificate);
+      await documentRecord.sendEmail(certificate, 'tfl-file-name');
 
       expect(spy).toHaveBeenCalledWith(
         {
@@ -180,7 +182,7 @@ describe('Emailers', () => {
           personalisation: {},
         },
         '12345',
-        null,
+        'tfl-file-name',
       );
       expect(spy).toHaveBeenCalledTimes(2);
     });
@@ -192,6 +194,71 @@ describe('Emailers', () => {
         Body: '1234' as unknown as Buffer,
       } as unknown as IGetObjectCommandOutput;
       const documentRecord = new TflFeedEmail(notificationService);
+      const spy = jest.spyOn(notificationService, 'sendNotification').mockResolvedValue();
+
+      await documentRecord.sendEmail(certificate);
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('AntsFeedEmail', () => {
+    it('should return me correct partial params for a Ants feed record', async () => {
+      process.env.ANTS_EMAIL_LIST = 'email1@email.com';
+      const certificate: IGetObjectCommandOutput = {
+        Metadata: {},
+        Body: '1234' as unknown as Buffer,
+      } as unknown as IGetObjectCommandOutput;
+      const documentRecord = new AntsFeedEmail(notificationService);
+      const spy = jest.spyOn(notificationService, 'sendNotification').mockResolvedValue();
+
+      await documentRecord.sendEmail(certificate, 'ants-file-name');
+
+      expect(spy).toHaveBeenCalledWith(
+        {
+          email: 'email1@email.com',
+          shouldEmail: 'true',
+          fileData: '1234',
+          documentType: 'ANTS_FEED',
+          personalisation: {},
+        },
+        '12345',
+        'ants-file-name',
+      );
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should allow me to send two emails with the values overwritten', async () => {
+      process.env.ANTS_EMAIL_LIST = 'email1@email.com,email2@email.com';
+      const certificate: IGetObjectCommandOutput = {
+        Metadata: {},
+        Body: '1234' as unknown as Buffer,
+      } as unknown as IGetObjectCommandOutput;
+      const documentRecord = new AntsFeedEmail(notificationService);
+      const spy = jest.spyOn(notificationService, 'sendNotification').mockResolvedValue();
+
+      await documentRecord.sendEmail(certificate, 'ants-file-name');
+
+      expect(spy).toHaveBeenCalledWith(
+        {
+          email: 'email2@email.com',
+          shouldEmail: 'true',
+          fileData: '1234',
+          documentType: 'ANTS_FEED',
+          personalisation: {},
+        },
+        '12345',
+        'ants-file-name',
+      );
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+    it('should not send any in the env var is not defined', async () => {
+      // biome-ignore lint/performance/noDelete: <testing need to remove it, undefined does not behave the same>
+      delete process.env.ANTS_EMAIL_LIST;
+      const certificate: IGetObjectCommandOutput = {
+        Metadata: {},
+        Body: '1234' as unknown as Buffer,
+      } as unknown as IGetObjectCommandOutput;
+      const documentRecord = new AntsFeedEmail(notificationService);
       const spy = jest.spyOn(notificationService, 'sendNotification').mockResolvedValue();
 
       await documentRecord.sendEmail(certificate);
