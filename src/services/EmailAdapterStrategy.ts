@@ -1,4 +1,5 @@
 import { Service } from 'typedi';
+import { AntsFeedEmail } from '../emailers/AntsFeedEmail';
 import { CertificateEmail } from '../emailers/CertificateEmail';
 import { LetterEmail } from '../emailers/LetterEmail';
 import { PlateEmail } from '../emailers/PlateEmail';
@@ -14,6 +15,10 @@ export class EmailAdapterStrategy {
 	public getStrategy(filename: string, certificate: IGetObjectCommandOutput) {
 		if (filename.includes('VOSA')) {
 			return new TflFeedEmail(this.notificationService);
+		}
+
+		if (filename.includes('ANTS')) {
+			return new AntsFeedEmail(this.notificationService);
 		}
 
 		if (certificate.Metadata!['cert-type'] === 'VTG12' || certificate.Metadata!['cert-type'] === 'VTP12') {

@@ -4,16 +4,16 @@ import { DocumentTypes, IGetObjectCommandOutput, IPartialParams } from '../model
 import { NotificationService } from '../services/NotificationService';
 import { BaseEmailRecord } from './BaseEmailRecord';
 
-export class TflFeedEmail extends BaseEmailRecord {
+export class AntsFeedEmail extends BaseEmailRecord {
 	constructor(@Inject() notificationService: NotificationService) {
 		super(notificationService);
 	}
 
 	public async sendEmail(certificate: IGetObjectCommandOutput, fileName: string | null = null) {
-		const emailList = process.env.TFL_EMAIL_LIST?.split(',') ?? [];
+		const emailList = process.env.ANTS_EMAIL_LIST?.split(',') ?? [];
 		const partialParams = this.generatePartialParameters(certificate);
 		for (const email of emailList) {
-			partialParams.email = email; // replace email with real email from the TFL feed data.
+			partialParams.email = email; // replace email with real email from the ANTS feed data.
 			await this.notificationService.sendNotification(partialParams!, this.getTemplateId(), fileName);
 		}
 	}
@@ -23,14 +23,14 @@ export class TflFeedEmail extends BaseEmailRecord {
 			email: '',
 			shouldEmail: 'true',
 			fileData: certificate.Body,
-			documentType: DocumentTypes.TFL_FEED,
+			documentType: DocumentTypes.ANTS_FEED,
 			personalisation: {},
 		};
 	}
 
 	protected getTemplateId(): string {
-		if (process.env.TFL_FEED_TEMPLATE_ID) {
-			return process.env.TFL_FEED_TEMPLATE_ID;
+		if (process.env.ANTS_FEED_TEMPLATE_ID) {
+			return process.env.ANTS_FEED_TEMPLATE_ID;
 		}
 
 		throw new Error(ERRORS.TEMPLATE_ID_ENV_VAR_NOT_EXIST);

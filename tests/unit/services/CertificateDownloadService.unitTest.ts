@@ -71,4 +71,37 @@ describe('CertificateDownloadService', () => {
       }
     });
   });
+  describe('cleanForLogging()', () => {
+    it('Should return original object with redacted true and response not altered', () => {
+      expect((CertificateDownloadService as any).cleanForLogging({
+        Body: {
+          redacted: false,
+        },
+        mockData: 'mock data',
+        $response: undefined,
+      })).
+      toEqual({
+        Body: {
+          redacted: true,
+        },
+        mockData: 'mock data',
+        $response: undefined,
+      });
+    });
+    it('Should return original object with redacted true and response becomes undefined', () => {
+      expect((CertificateDownloadService as any).cleanForLogging({
+        Body: {
+        },
+        mockData: 'mock data',
+        $response: 'has value',
+      })).
+      toEqual({
+        Body: {
+          redacted: true,
+        },
+        mockData: 'mock data',
+        $response: undefined,
+      });
+    });
+  });
 });
